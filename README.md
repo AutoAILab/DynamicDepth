@@ -76,7 +76,7 @@ python -m dynamicdepth.evaluate_depth  # the configs are defined in options.py
 ### Citation
 
 ```
-@article{dynamicdepth,
+@article{feng2022disentangling,
   title={Disentangling Object Motion and Occlusion for Unsupervised Multi-frame Monocular Depth},
   author={Feng, Ziyue and Yang, Liang and Jing, Longlong and Wang, Haiyan and Tian, YingLi and Li, Bing},
   journal={arXiv preprint arXiv:2203.15174},
