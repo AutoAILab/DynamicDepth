@@ -25,39 +25,43 @@ conda install opencv=3.3.1   # just needed for evaluation
 pip install open3d
 pip install wandb
 pip install scikit-image
+python -m pip install cityscapesscripts
 ```
 
 We ran our experiments with PyTorch 1.8.0, CUDA 11.1, Python 3.6.6 and Ubuntu 18.04.
 
-## 💾 KITTI Data Prepare
-
-**Download Data**
-
-First download the KITTI RAW dataset, put in the `kitti_data` folder.
-
-Our default settings expect that you have converted the png images to jpeg with this command, which also deletes the raw KITTI `.png` files:
-
-```shell
-find kitti_data/ -name '*.png' | parallel 'convert -quality 92 -sampling-factor 2x2,1x1,1x1 {.}.png {.}.jpg && rm {}'
-```
-
-or you can skip this conversion step and train from raw png files by adding the flag `--png` when training, at the expense of slower load times.
-
 ## 💾 Cityscapes Data Prepare
 
-First preprocess the Cityscapes dataset using SfMLearner's prepare_train_data.py script.
-We used the following command:
+Pull the repository and make a folder named CS_RAW for cityscapes raw data:
 
 ```bash
+git clone https://github.com/AutoAILab/DynamicDepth.git
+cd DynamicDepth
+cd data
+mkdir CS_RAW
+```
+
+From [Cityscapes official website](https://www.cityscapes-dataset.com/) download the following packages: 1) `leftImg8bit_sequence_trainvaltest.zip`, 2) `camera_trainvaltest.zip` into the `CS_RAW` folder.
+
+Preprocess the Cityscapes dataset using the `prepare_train_data.py`(from SfMLearner) script with following command:
+
+```bash
+cd CS_RAW
+unzip leftImg8bit_sequence_trainvaltest.zip
+unzip camera_trainvaltest.zip
+cd ..
+
 python prepare_train_data.py \
     --img_height 512 \
     --img_width 1024 \
-    --dataset_dir <path_to_downloaded_cityscapes_data> \
+    --dataset_dir CS_RAW \
     --dataset_name cityscapes \
-    --dump_root <your_preprocessed_cityscapes_path> \
+    --dump_root CS \
     --seq_length 3 \
     --num_threads 8
 ```
+
+Prepare dynamic object mask `doj_mask` (To be updated soon)
 
 ## ⏳ Training
 
