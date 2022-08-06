@@ -5,6 +5,7 @@ This paper has been accepted by [ECCV 2022](https://eccv2022.ecva.net/)
 By [Ziyue Feng](https://ziyue.cool), [Liang Yang](https://ericlyang.github.io/), [Longlong Jing](https://longlong-jing.github.io/), [Haiyan Wang](https://haiyan-chris-wang.github.io/), [Yingli Tian](https://www.ccny.cuny.edu/profiles/yingli-tian), and [Bing Li](https://www.clemson.edu/cecas/departments/automotive-engineering/people/li.html).
 
 Arxiv: [Link](https://arxiv.org/abs/2203.15174)
+Video: [link](https://youtu.be/Gg6pLvFDdc4)
 
 ![teaser.png](assets/teaser.png)
 
