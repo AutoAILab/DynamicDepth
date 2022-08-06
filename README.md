@@ -5,8 +5,12 @@ This paper has been accepted by [ECCV 2022](https://eccv2022.ecva.net/)
 By [Ziyue Feng](https://ziyue.cool), [Liang Yang](https://ericlyang.github.io/), [Longlong Jing](https://longlong-jing.github.io/), [Haiyan Wang](https://haiyan-chris-wang.github.io/), [Yingli Tian](https://www.ccny.cuny.edu/profiles/yingli-tian), and [Bing Li](https://www.clemson.edu/cecas/departments/automotive-engineering/people/li.html).
 
 Arxiv: [Link](https://arxiv.org/abs/2203.15174)
-Video: [link](https://youtu.be/Gg6pLvFDdc4)
+Youtube: [link](https://youtu.be/Gg6pLvFDdc4)
 
+## Video
+[![image](https://user-images.githubusercontent.com/21237230/183265409-7e50b1f2-30b2-4df6-8c07-25bd7a005112.png)](https://youtu.be/Gg6pLvFDdc4)
+
+## Sample from Cityscapes dataset
 ![teaser.png](assets/teaser.png)
 
 ## Architecture:
