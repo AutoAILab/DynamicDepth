@@ -87,3 +87,12 @@ python -m dynamicdepth.evaluate_depth  # the configs are defined in options.py
   year={2022}
 }
 ```
+
+## Reference
+
+InstaDM: https://github.com/SeokjuLee/Insta-DM
+ManyDepth: https://github.com/nianticlabs/manydepth
+
+# Contact
+
+If you have any concern with this paper or implementation, welcome to open an issue or email me at 'zfeng@clemson.edu'
