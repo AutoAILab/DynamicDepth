@@ -195,10 +195,10 @@ class ResnetEncoderMatching(nn.Module):
                 if aug_mask[batch_idx][0][0][0] == 0:
                     if set_1 or pool:
                         occ_mask = (imgs[batch_idx]>0).unsqueeze(0).repeat([96,64,1,1])
-                        mask = (F.grid_sample(occ_mask.float(), pix_locs, padding_mode='zeros', mode='bilinear', align_corners=True) > pool_th).detach()
-                        if set_1:
+                        mask = (F.grid_sample(occ_mask.float(), pix_locs, padding_mode='zeros', mode='bilinear', align_corners=True) > pool_th).detach() # mask of the occluded area in the cost volume
+                        if set_1: # Set all occluded cost to be 1.0
                             warped[mask] = 1.0
-                        elif pool:
+                        elif pool: # Use nearby non-occluded area cost value to replace occluded ones, as mentioned in the paper.
                             x = warped.clone()
                             x[mask] = 0
                             x = F.max_pool3d(x.permute(1, 0, 2, 3), pool_r*2+1, stride=1, padding=pool_r).permute(1, 0, 2, 3)
