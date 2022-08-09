@@ -6,6 +6,7 @@ By [Ziyue Feng](https://ziyue.cool), [Liang Yang](https://ericlyang.github.io/),
 
 Arxiv: [Link](https://arxiv.org/abs/2203.15174)
 Youtube: [link](https://youtu.be/Gg6pLvFDdc4)
+Project Site: [link](https://sites.google.com/view/dynamicdepth)
 
 ## Video
 [![image](https://user-images.githubusercontent.com/21237230/183265409-7e50b1f2-30b2-4df6-8c07-25bd7a005112.png)](https://youtu.be/Gg6pLvFDdc4)
