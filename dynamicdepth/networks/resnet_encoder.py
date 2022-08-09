@@ -157,7 +157,7 @@ class ResnetEncoderMatching(nn.Module):
 
         batch_cost_volume = []  # store all cost volumes of the batch
         cost_volume_masks = []  # store locations of '0's in cost volume for confidence
-        imgs = F.interpolate((lookup_images.sum(1).unsqueeze(1)<0.15).float(), [48, 128])
+        occ_mask = F.interpolate((lookup_images.sum(1).unsqueeze(1)<0.15).float(), [48, 128]) # occluded areas after DOMD module will be black, so we assume their RGB value < 0.15
 
         for batch_idx in range(len(current_feats)):
 
@@ -194,8 +194,8 @@ class ResnetEncoderMatching(nn.Module):
                 warped = F.grid_sample(lookup_feat, pix_locs, padding_mode='zeros', mode='bilinear', align_corners=True)
                 if aug_mask[batch_idx][0][0][0] == 0:
                     if set_1 or pool:
-                        occ_mask = (imgs[batch_idx]>0).unsqueeze(0).repeat([96,64,1,1])
-                        mask = (F.grid_sample(occ_mask.float(), pix_locs, padding_mode='zeros', mode='bilinear', align_corners=True) > pool_th).detach() # mask of the occluded area in the cost volume
+                        occ_mask = (occ_mask[batch_idx]>0).unsqueeze(0).repeat([96,64,1,1])
+                        mask = (F.grid_sample(occ_mask.float(), pix_locs, padding_mode='zeros', mode='bilinear', align_corners=True) > pool_th).detach() # project the occlusion mask of the image to each layers of the cost volume
                         if set_1: # Set all occluded cost to be 1.0
                             warped[mask] = 1.0
                         elif pool: # Use nearby non-occluded area cost value to replace occluded ones, as mentioned in the paper.
