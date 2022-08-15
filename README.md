@@ -99,6 +99,14 @@ python -m dynamicdepth.train  # the configs are defined in options.py
 
 `val()` function in the trainer.py evaluates the model on Cityscapes testing set.
 
+## 📦 Pretrained model
+
+You can download our pretrained model from the following links:
+
+| CNN Backbone      | Input size  | Cityscapes AbsRel | Link                                                               |
+|-------------------|-------------|:-----------------------------------:|----------------------------------------------------------------------------------------------|
+| ResNet 18         | 640 x 192   |      0.104         | [Download 🔗](https://drive.google.com/file/d/1k3-7nki-v6k111wBZ-7pQNVU8QU7Nemx/view?usp=sharing)           |
+
 ## Citation
 
 ```
