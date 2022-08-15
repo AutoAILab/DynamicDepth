@@ -1,3 +1,4 @@
+from mimetypes import init
 import os
 os.environ["MKL_NUM_THREADS"] = "1"  # noqa F402
 os.environ["NUMEXPR_NUM_THREADS"] = "1"  # noqa F402
@@ -13,7 +14,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
-from manydepth.rigid_warp import forward_warp
+from dynamicdepth.rigid_warp import forward_warp
 import scipy
 
 import json
@@ -22,7 +23,7 @@ from .utils import readlines, sec_to_hm_str
 from .layers import SSIM, BackprojectDepth, Project3D, transformation_from_parameters, \
     disp_to_depth, get_smooth_loss, compute_depth_errors
 
-from manydepth import datasets, networks
+from dynamicdepth import datasets, networks
 import matplotlib.pyplot as plt
 
 
@@ -36,7 +37,7 @@ def seed_worker(worker_id):
 class Trainer:
     def __init__(self, options):
         self.opt = options
-        wandb.init(project='InstaMD')
+        wandb.init(project='DynamicDepth')
         self.log_path = os.path.join(self.opt.log_dir, self.opt.model_name)
 
         # checking height and width are multiples of 32
@@ -135,11 +136,10 @@ class Trainer:
         # DATA
         datasets_dict = {"kitti": datasets.KITTIRAWDataset,
                          "cityscapes_preprocessed": datasets.CityscapesPreprocessedDataset,
-                         "cityscapes_InstaDM": datasets.CityscapesInstaDMDataset,
                          "kitti_odom": datasets.KITTIOdomDataset}
         self.dataset = datasets_dict[self.opt.dataset]
 
-        if self.opt.split in ['cityscapes_preprocessed', 'cityscapes_instadm']:
+        if self.opt.split in ['cityscapes_preprocessed']:
             fpath = os.path.join("splits", 'cityscapes', "{}_files.txt")
             train_filenames = readlines(fpath.format("train"))
         else:
@@ -159,14 +159,7 @@ class Trainer:
             train_dataset, self.opt.batch_size, shuffle=False,#not self.opt.export,
             num_workers=self.opt.num_workers, pin_memory=False, drop_last=True,
             worker_init_fn=seed_worker)
-        if self.opt.split == 'cityscapes_instadm':
-            val_filenames = readlines('splits/cityscapes/test_files.txt')
-            val_dataset = datasets.CityscapesInstaDMEvalDataset(self.opt.eval_data_path,
-                                                     val_filenames,
-                                                     self.opt.height, self.opt.width,
-                                                     [0, -1], 4,
-                                                     is_train=False) #, mask_noise=self.opt.mask_noise=='doj')
-        elif self.opt.split == 'cityscapes_preprocessed':
+        if self.opt.split == 'cityscapes_preprocessed':
             val_filenames = readlines('splits/cityscapes/test_files.txt')
             val_dataset = datasets.CityscapesEvalDataset(self.opt.eval_data_path, val_filenames,
                                                      self.opt.height, self.opt.width,
@@ -185,7 +178,7 @@ class Trainer:
         self.train_filenames = train_filenames
         self.val_filenames = val_filenames
 
-        if self.opt.split in ['cityscapes_preprocessed', 'cityscapes_instadm']:
+        if self.opt.split in ['cityscapes_preprocessed']:
             print('loading cityscapes gt depths individually due to their combined size!')
             self.gt_depths = 'splits/cityscapes/gt_depths/'
         else:
@@ -224,7 +217,7 @@ class Trainer:
         wandb.config.update(self.opt)
         self.best = 10.0
         self.doj_best = 10.0
-        torch.autograd.set_detect_anomaly(True)
+        #torch.autograd.set_detect_anomaly(True)
 
     def set_train(self):
         """Convert all models to training mode
@@ -279,6 +272,8 @@ class Trainer:
             self.run_epoch()
             if (self.epoch + 1) % self.opt.save_frequency == 0:
                 self.save_model()
+        self.models = init
+        wandb.join()
 
     def run_epoch(self):
         """Run a single epoch of training and validation
@@ -819,8 +814,6 @@ class Trainer:
                 reprojection_loss[maskm1.unsqueeze(1)] = (reprojection_losses[:,1,:,:])[maskm1]
                 reprojection_loss[maskp1.unsqueeze(1)] = (reprojection_losses[:,0,:,:])[maskp1]
                 reprojection_loss[maskand.unsqueeze(1)] = 0
-                if is_multi:
-                    pdb.set_trace() #vis aachen 52 18
 
 
             if not self.opt.disable_automasking:
@@ -928,7 +921,7 @@ class Trainer:
         else:
             _, depth_pred = disp_to_depth(outputs[("mono_disp", 0)], self.opt.min_depth, self.opt.max_depth)
 
-        if self.opt.split in ['cityscapes_preprocessed', 'cityscapes_instadm']:
+        if self.opt.split in ['cityscapes_preprocessed']:
             gt_depth = np.load(os.path.join(self.gt_depths, str(idx).zfill(3) + '_depth.npy'))
             gt_height, gt_width = gt_depth.shape[:2]
             assert gt_height == 1024
@@ -944,7 +937,7 @@ class Trainer:
         depth_pred = torch.clamp(F.interpolate(depth_pred, [gt_height, gt_width], mode="bilinear", align_corners=False), 1e-3, 80)
         depth_pred = depth_pred.detach().squeeze()
         
-        if self.opt.split in ['cityscapes_preprocessed', 'cityscapes_instadm']:
+        if self.opt.split in ['cityscapes_preprocessed']:
             # when evaluating cityscapes, we centre crop to the middle 50% of the image.
             # Bottom 25% has already been removed - so crop the sides and the top here
             gt_depth = gt_depth[256:, 192:1856]
@@ -969,7 +962,7 @@ class Trainer:
 
         inputs['doj_mask'] = F.interpolate(inputs['doj_mask'], [gt_height, gt_width])
         inputs['doj_mask'] = inputs['doj_mask'][0][0]
-        if self.opt.split in ['cityscapes_preprocessed', 'cityscapes_instadm']:
+        if self.opt.split in ['cityscapes_preprocessed']:
             inputs['doj_mask'] = inputs['doj_mask'][256:,192:1856]
         doj_mask = mask * inputs['doj_mask'].bool()
         losses['dojpxs'] += doj_mask.sum()

@@ -89,7 +89,7 @@ def main():
                                        seq_length=args.seq_length)        
 
     if args.dataset_name == 'cityscapes':
-        from cityscapes.cityscapes_loader import cityscapes_loader
+        from cs_SfM_loader.cityscapes_loader import cityscapes_loader
         data_loader = cityscapes_loader(args.dataset_dir,
                                         img_height=args.img_height,
                                         img_width=args.img_width,

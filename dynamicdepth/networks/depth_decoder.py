@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 from collections import OrderedDict
-from manydepth.layers import ConvBlock, Conv3x3, upsample
+from dynamicdepth.layers import ConvBlock, Conv3x3, upsample
 
 
 class DepthDecoder(nn.Module):

@@ -73,9 +73,9 @@ class CityscapesPreprocessedDataset(MonoDataset):
 
         city, seq, frame = frame_name.split('_')
         frame = int(frame)
-        mask = np.load('/scratch1/CS_MD/tgt_mask/{}_{}_{}.npy'.format(city, seq, frame))
-        maskm1 = np.load('/scratch1/CS_MD/tgt_mask/{}_{}_{}-1.npy'.format(city, seq, frame))
-        maskp1 = np.load('/scratch1/CS_MD/tgt_mask/{}_{}_{}+1.npy'.format(city, seq, frame))
+        mask = np.load('data/CS/train_mask/{}_{}_{}.npy'.format(city, seq, frame))
+        maskm1 = np.load('data/CS/train_mask/{}_{}_{}-1.npy'.format(city, seq, frame))
+        maskp1 = np.load('data/CS/train_mask/{}_{}_{}+1.npy'.format(city, seq, frame))
 
         inputs = {}
         inputs["doj_mask"] = pil.fromarray(mask)
@@ -85,24 +85,6 @@ class CityscapesPreprocessedDataset(MonoDataset):
         if do_flip:
             for key in inputs:
                 inputs[key] = inputs[key].transpose(pil.FLIP_LEFT_RIGHT)
-
-        return inputs
-        
-    def get_warp(self, city, frame_name, side, do_flip):
-        if side is not None:
-            raise ValueError("Cityscapes dataset doesn't know how to deal with sides")
-
-        city, seq, frame = frame_name.split('_')
-        frame = int(frame)
-        mask = np.load('/scratch1/CS_MD4/warp/{}_{}_{}.npy'.format(city, seq, frame))
-
-        inputs = {}
-        inputs["warp"] = mask
-
-        if do_flip:
-            inputs["warp"] = np.flip(mask, axis=2).copy()
-        
-        inputs["warp"] = torch.from_numpy(inputs["warp"])
 
         return inputs
 

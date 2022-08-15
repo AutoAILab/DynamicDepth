@@ -67,11 +67,29 @@ python prepare_train_data.py \
     --num_threads 8
 ```
 
-Prepare dynamic object mask `doj_mask` (To be updated soon)
+Download cityscapes depth ground truth(provided by manydepth) for evaluation:
+```bash
+cd ..
+cd splits/cityscapes/
+wget https://storage.googleapis.com/niantic-lon-static/research/manydepth/gt_depths_cityscapes.zip
+unzip gt_depths_cityscapes.zip
+cd ../..
+```
+
+(Recommended)Download Manydepth pretrained model from [Here](https://drive.google.com/file/d/1Itlz4J5Wp45KV06yBnDsp06Opw-BC8Go/view?usp=sharing) and put in the log folder. Training from these weights will converge much faster.
+```bash
+mkdir log
+cd log
+# Download CityScapes_MR.zip to here 
+unzip CityScapes_MR.zip
+cd ..
+```
+
+Download dynamic object masks for Cityscapes dataset from [Here](https://drive.google.com/file/d/1cUCi5piNhpvli_rsKrh01eSvv6okrNvG/view?usp=sharing) and extract the `train_mask` and `val_mask` folder to `DynamicDepth/data/CS/`.
 
 ## ⏳ Training
 
-By default models and log event files are saved to `log/mdp/`.
+By default models and log event files are saved to `log/dynamicdepth/models`.
 
 ```shell
 python -m dynamicdepth.train  # the configs are defined in options.py
@@ -79,9 +97,7 @@ python -m dynamicdepth.train  # the configs are defined in options.py
 
 ## ⏳ Evaluating
 
-```shell
-python -m dynamicdepth.evaluate_depth  # the configs are defined in options.py
-```
+`val()` function in the trainer.py evaluates the model on Cityscapes testing set.
 
 ## Citation
 

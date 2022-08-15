@@ -2,7 +2,7 @@ import torch
 import random
 import numpy as np
 from .trainer import Trainer
-from .options_kt import MonodepthOptions
+from .options import MonodepthOptions
 
 def seed_all(seed):
     if not seed:

@@ -12,11 +12,11 @@ class MonodepthOptions:
         self.parser.add_argument("--data_path",
                                  type=str,
                                  help="path to the training data",
-                                 default='/scratch1/CS_MD_ori')
+                                 default='data/CS')
         self.parser.add_argument("--eval_data_path",
                                  type=str,
                                  help="path to the evaluation data",
-                                 default='/scratch1/CS_RAW/')
+                                 default='data/CS_RAW/')
         self.parser.add_argument("--log_dir",
                                  type=str,
                                  help="log directory",
@@ -26,7 +26,7 @@ class MonodepthOptions:
         self.parser.add_argument("--model_name",
                                  type=str,
                                  help="the name of the folder to save the model in",
-                                 default="it1")
+                                 default="dynamicdepth")
         self.parser.add_argument("--split",
                                  type=str,
                                  help="which training split to use",
@@ -68,7 +68,7 @@ class MonodepthOptions:
         self.parser.add_argument("--disparity_smoothness",
                                  type=float,
                                  help="disparity smoothness weight",
-                                 default=1e-3)
+                                 default=0.002)
         self.parser.add_argument("--scales",
                                  nargs="+",
                                  type=int,
@@ -92,11 +92,11 @@ class MonodepthOptions:
         self.parser.add_argument("--batch_size",
                                  type=int,
                                  help="batch size",
-                                 default=12)
+                                 default=14)
         self.parser.add_argument("--learning_rate",
                                  type=float,
                                  help="learning rate",
-                                 default=1e-4)
+                                 default=1e-5)
         self.parser.add_argument("--num_epochs",
                                  type=int,
                                  help="number of epochs",
@@ -116,7 +116,7 @@ class MonodepthOptions:
                                       "network and the pose network.")
         self.parser.add_argument("--freeze_teacher_step",
                                  type=int,
-                                 default=-1,
+                                 default=1700,
                                  help="Sets the step number at which to freeze the teacher"
                                       "network and the pose network. By default is -1 and so"
                                       "will not be used.")
@@ -191,10 +191,11 @@ class MonodepthOptions:
                                  type=str,
                                  help="name of model to load",
                                  default='log/CityScapes_MR/')
+                                 #default=None)
         self.parser.add_argument("--mono_weights_folder",
                                  type=str,
-                                 #default='log/mdp/models/weights_absrel102')
-                                 default='log/mono/119_157')
+                                 default='log/CityScapes_MR/')
+                                 #default=None)
         self.parser.add_argument("--models_to_load",
                                  nargs="+",
                                  type=str,
@@ -317,11 +318,11 @@ class MonodepthOptions:
         self.parser.add_argument("--cv_pool_radius",
                                  type=int,
                                  help="the max_pooling (kernel size-1)/2 for occlusion region in cost volume",
-                                 default=2)
+                                 default=1)
         self.parser.add_argument("--cv_pool_th",
                                  type=float,
                                  help="the threshold for determing occlusion",
-                                 default=0.4)
+                                 default=0.7)
         
         # Feature warping
         self.parser.add_argument('--feat_warp',

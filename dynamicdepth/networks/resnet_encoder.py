@@ -10,7 +10,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.models as models
 import torch.utils.model_zoo as model_zoo
-from manydepth.layers import BackprojectDepth, Project3D
+from dynamicdepth.layers import BackprojectDepth, Project3D
 
 
 class ResNetMultiImageInput(models.ResNet):

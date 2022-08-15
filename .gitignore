@@ -1,3 +1,7 @@
 /data/CS/
 /data/CS_RAW/
 *.pyc
+wandb
+log
+/splits/cityscapes/gt_depths
+sweep

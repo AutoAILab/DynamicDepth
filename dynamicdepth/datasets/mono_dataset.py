@@ -210,9 +210,6 @@ class MonoDataset(data.Dataset):
     
     def get_doj_mask(self, folder, frame_index, side, do_flip):
         raise NotImplementedError
-    
-    def get_warp(self, folder, frame_index, side, do_flip):
-        raise NotImplementedError
 
     def check_depth(self):
         raise NotImplementedError

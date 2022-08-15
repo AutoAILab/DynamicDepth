@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 import torch.nn.functional as F
 from .utils import readlines
 from .options import MonodepthOptions
-from manydepth import datasets, networks
+from dynamicdepth import datasets, networks
 from .layers import transformation_from_parameters, disp_to_depth, grad_computation_tools
 import tqdm
 import matplotlib as mpl
@@ -155,7 +155,7 @@ def evaluate(opt):
             HEIGHT, WIDTH = opt.height, opt.width
         
         if opt.eval_split == 'cityscapes':
-            dataset = datasets.CityscapesEvalDataset(opt.data_path, filenames,
+            dataset = datasets.CityscapesEvalDataset(opt.eval_data_path, filenames,
                                                      HEIGHT, WIDTH,
                                                      frames_to_load, 4,
                                                      is_train=False)
@@ -249,6 +249,7 @@ def evaluate(opt):
                 if opt.eval_teacher:
                     output = encoder(input_color)
                     output = depth_decoder(output)
+                    teacher_output = output
                 else:
                     teacher_output = teacher_encoder(input_color)
                     teacher_output = teacher_depth_decoder(teacher_output)
