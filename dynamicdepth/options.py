@@ -286,12 +286,6 @@ class MonodepthOptions:
                                  type=str,
                                  default='diff')
      
-        # Noise masking
-        self.parser.add_argument("--mask_noise",
-                                 help="If set, will mask out most layers in the cost volume according to teacher net",
-                                 type=str,
-                                 default="false",
-                                 choices=["true", "false", "doj"], )
         
         # Multi(Future) frame cost volume selection
         self.parser.add_argument("--cv_min",
@@ -324,10 +318,6 @@ class MonodepthOptions:
                                  help="the threshold for determing occlusion",
                                  default=0.7)
         
-        # Feature warping
-        self.parser.add_argument('--feat_warp',
-                                 action='store_true',
-                                 help='If set, will warp dynamic objs area feature map before constructing cost volume')
      
         # Export warped img
         self.parser.add_argument('--export',

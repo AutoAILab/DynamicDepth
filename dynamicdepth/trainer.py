@@ -152,7 +152,7 @@ class Trainer:
 
         train_dataset = self.dataset(
             self.opt.data_path, train_filenames, self.opt.height, self.opt.width,
-            frames_to_load, 4, is_train=not self.opt.export, img_ext=img_ext, feat_warp=self.opt.feat_warp and self.opt.split=='cityscapes_preprocessed')
+            frames_to_load, 4, is_train=not self.opt.export, img_ext=img_ext)
         if self.opt.export:
             self.opt.batch_size = 1
         self.train_loader = DataLoader(
@@ -164,8 +164,7 @@ class Trainer:
             val_dataset = datasets.CityscapesEvalDataset(self.opt.eval_data_path, val_filenames,
                                                      self.opt.height, self.opt.width,
                                                      [0, -1], 4,
-                                                     is_train=False,
-                                                     feat_warp=self.opt.feat_warp)
+                                                     is_train=False)
         else:
             val_filenames = readlines(os.path.join('splits', self.opt.eval_split, "test_files.txt"))
             val_dataset = self.dataset(
@@ -438,8 +437,6 @@ class Trainer:
                 outputs[_key] = mono_outputs[key]
 
         # multi frame path
-        if not self.opt.feat_warp:
-            inputs["warp"] = None
         #lookup_frames = lookup_frames.permute([0,1,3,4,2])
         #lookup_frames[lookup_frames.sum(4) < 0.18]=0
         #lookup_frames = lookup_frames.permute([0,1,4,2,3])
@@ -452,16 +449,13 @@ class Trainer:
                                                                         min_depth_bin=min_depth_bin,
                                                                         max_depth_bin=max_depth_bin,
                                                                         teacher_depth=outputs["mono_depth", 0, 0],
-                                                                        mask_noise=self.opt.mask_noise,
                                                                         doj_mask=inputs["doj_mask"],
                                                                         cv_min=self.opt.cv_min=='true',
                                                                         aug_mask=augmentation_mask,
                                                                         set_1=self.opt.cv_set_1,
                                                                         pool=self.opt.cv_pool,
                                                                         pool_r=self.opt.cv_pool_radius,
-                                                                        pool_th=self.opt.cv_pool_th,
-                                                                        feat_warp=self.opt.feat_warp,
-                                                                        warp=inputs["warp"])
+                                                                        pool_th=self.opt.cv_pool_th)
         outputs.update(self.models["depth"](features))
 
         ############# warpping image based on multi frame model pose and depth ###############
@@ -626,10 +620,12 @@ class Trainer:
 
                 self.compute_depth_losses(inputs, outputs, losses, batch_idx, accumulate=True)
 
+        print('Val result:')
         for i, metric in enumerate(self.depth_metric_names):
             losses[metric] /= total_batches
             losses['doj/'+metric] /= losses['doj/count']
             print(metric, ': ', losses[metric])
+        for i, metric in enumerate(self.depth_metric_names):    
             print('doj/'+metric, ': ', losses['doj/'+metric])
             ###### done until here
         self.log('val', inputs, outputs, losses)

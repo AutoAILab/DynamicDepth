@@ -317,9 +317,9 @@ def evaluate(opt):
                                                            invK,
                                                            min_depth_bin, max_depth_bin,
                                                            teacher_depth=teacher_depth,
-                                                           mask_noise=opt.mask_noise,
                                                            doj_mask=data["doj_mask"].cuda(),
-                                                           cv_min=opt.cv_min=='true')
+                                                           cv_min=opt.cv_min=='true',
+                                                           aug_mask=torch.zeros([1, 1, 1, 1]).cuda().float())
                     output = depth_decoder(output)
                 
 

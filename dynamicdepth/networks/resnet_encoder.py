@@ -145,7 +145,7 @@ class ResnetEncoderMatching(nn.Module):
         if self.is_cuda:
             self.warp_depths = self.warp_depths.cuda()
 
-    def match_features(self, current_feats, lookup_feats, relative_poses, K, invK, lookup_images, cv_min, aug_mask, set_1, pool, pool_r, pool_th, feat_warp, warp):
+    def match_features(self, current_feats, lookup_feats, relative_poses, K, invK, lookup_images, cv_min, aug_mask, set_1, pool, pool_r, pool_th):
         """Compute a cost volume based on L1 difference between current_feats and lookup_feats.
 
         We backwards warp the lookup_feats into the current frame using the estimated relative
@@ -187,9 +187,6 @@ class ResnetEncoderMatching(nn.Module):
 
                 lookup_feat = lookup_feat.repeat([self.num_depth_bins, 1, 1, 1])
                 pix_locs = self.projector(world_points, _K, lookup_pose)
-
-                if aug_mask[batch_idx][0][0][0] == 0 and feat_warp:
-                    lookup_feat = F.grid_sample(lookup_feat, warp[batch_idx].repeat(96,1,1,1), padding_mode='zeros', mode='bilinear', align_corners=True)
                 
                 warped = F.grid_sample(lookup_feat, pix_locs, padding_mode='zeros', mode='bilinear', align_corners=True)
                 if aug_mask[batch_idx][0][0][0] == 0:
@@ -281,8 +278,7 @@ class ResnetEncoderMatching(nn.Module):
         return confidence_mask
 
     def forward(self, current_image, lookup_images, poses, K, invK, min_depth_bin=None, max_depth_bin=None,
-                teacher_depth=None, mask_noise=False, doj_mask=None, cv_min=True, aug_mask=None, set_1=False, pool=False, pool_r=2, pool_th=0.4, feat_warp=False, warp=None
-                ):
+                teacher_depth=None, mask_noise=False, doj_mask=None, cv_min=True, aug_mask=None, set_1=False, pool=False, pool_r=2, pool_th=0.4):
         # feature extraction
         self.features = self.feature_extraction(current_image, return_all_feats=True)
         current_feats = self.features[-1]
@@ -302,19 +298,7 @@ class ResnetEncoderMatching(nn.Module):
             # warp features to find cost volume
             cost_volume, missing_mask = \
                 self.match_features(current_feats, lookup_feats, poses, K, invK, lookup_images, cv_min=cv_min, aug_mask=aug_mask,
-                                    set_1=set_1, pool=pool, pool_r=pool_r, pool_th=pool_th, feat_warp=feat_warp, warp=warp)
-            if not mask_noise=='false':
-                teacher_depth = F.interpolate(teacher_depth, [48, 128])
-                teacher_bin_idx = ((teacher_depth-min_depth_bin)//((max_depth_bin - min_depth_bin)/self.num_depth_bins)).permute([0,2,3,1])
-                cv_idxs = torch.linspace(0, self.num_depth_bins-1, steps=self.num_depth_bins)
-                cv_Idxs = torch.ones([batch_size,48,128,self.num_depth_bins])
-                cv_Idxs[:,:,:] = cv_idxs
-                cv_Idxs = cv_Idxs.cuda()
-                noise_mask = (abs(cv_Idxs - teacher_bin_idx) > 5).permute([0,3,1,2]).detach()
-                if mask_noise == 'doj':
-                    doj_mask = F.interpolate(doj_mask, [48, 128])
-                    noise_mask*=doj_mask.repeat([1,96,1,1]).bool()
-                cost_volume[noise_mask]=cost_volume.max()
+                                    set_1=set_1, pool=pool, pool_r=pool_r, pool_th=pool_th)
             confidence_mask = self.compute_confidence_mask(cost_volume.detach() *
                                                            (1 - missing_mask.detach()))
 
