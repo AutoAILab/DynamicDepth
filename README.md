@@ -85,7 +85,7 @@ unzip CityScapes_MR.zip
 cd ..
 ```
 
-Download dynamic object masks for Cityscapes dataset from ([Google Drive](https://drive.google.com/file/d/1cUCi5piNhpvli_rsKrh01eSvv6okrNvG/view?usp=sharing) or [OneDrive](https://clemson-my.sharepoint.com/:u:/g/personal/zfeng_clemson_edu/ETJLmJVJz4FBoBLMxJ53T5wB_uGpCqtr9TktJTKgYdgbHA?e=I1fbWC)) and extract the `train_mask` and `val_mask` folder to `DynamicDepth/data/CS/`.
+Download dynamic object masks for Cityscapes dataset from ([Google Drive](https://drive.google.com/file/d/1cUCi5piNhpvli_rsKrh01eSvv6okrNvG/view?usp=sharing) or [OneDrive](https://clemson-my.sharepoint.com/:u:/g/personal/zfeng_clemson_edu/ETJLmJVJz4FBoBLMxJ53T5wB_uGpCqtr9TktJTKgYdgbHA?e=KER2Kl)) and extract the `train_mask` and `val_mask` folder to `DynamicDepth/data/CS/`.
 
 ## ⏳ Training
 
